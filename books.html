@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Booosh</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            margin: 0;
+        }
+
+        #search-container {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            background-color: #f2f2f2;
+        }
+
+        #search-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px 0 0 5px;
+        }
+
+        #search-button {
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+        }
+
+        #books-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .book {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            padding: 20px;
+            width: calc(33.333% - 20px);
+        }
+
+        .book h3 {
+            margin: 0;
+        }
+
+        .book p {
+            margin: 10px 0;
+        }
+
+        #cart-container {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100%;
+            background-color: #f2f2f2;
+            border-left: 1px solid #ddd;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #cart-items {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        #cart-total {
+            margin: 0;
+            font-weight: bold;
+        }
+
+        #checkout-button {
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bookstore</h1>
+    <div id="search-container">
+        <input type="text" id="search-input" placeholder="Search by title or author">
+        <button id="search-button">Search</button>
+    </div>
+    <div id="books-container"></div>
+    <div id="cart-container">
+        <h2>Shopping Cart</h2>
+        <div id="cart-items"></div>
+        <h3>Total: $<span id="cart-total">0</span></h3>
+        <button id="checkout-button">Checkout</button>
+    </div>
+    <script>
+        const books = [
+            { title: 'Book 1', author: 'Author 1', price: 10 },
+            { title: 'Book 2', author: 'Author 2', price: 20 },
+            { title: 'Book 3', author: 'Author 3', price: 30 },
+            { title: 'Book 4', author: 'Author 4', price: 40 },
+            { title: 'Book 5', author: 'Author 5', price: 50 },
+            { title: 'Book 6', author: 'Author 6', price: 60 },
+            { title: 'Book 7', author: 'Author 7', price: 70 },
+            { title: 'Book 8', author: 'Author 8', price: 80 },
+            { title: 'Book 9', author: 'Author 9', price: 90 },
+            { title: 'Book 10', author: 'Author 10', price: 100 },
+        ];
+
+        const cart = [];
+
+        function displayBooks(books) {
+            const booksContainer = document.getElementById('books-container');
+            booksContainer.innerHTML = '';
+            books.forEach(book => {
+                const bookElement = document.createElement('div');
+                bookElement.classList.add('book');
+                bookElement.innerHTML = `
+                    <h3>${book.title}</h3>
+                    <p>${book.author}</p>
+                    <p>$${book.price}</p>
+                    <button onclick="addToCart(${book.price}, '${book.title}')">Add to Cart</button>
+                `;
+                booksContainer.appendChild(bookElement);
+            });
+        }
+
+        function searchBooks(query) {
+            const results = books.filter(book => book.title.toLowerCase().includes(query.toLowerCase()) || book.author.toLowerCase().includes(query.toLowerCase()));
+            displayBooks(results);
+        }
+
+        function addToCart(price, title) {
+            cart.push({ price, title, quantity: 1 });
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartItems = document.getElementById('cart-items');
+            cartItems.innerHTML = '';
+            let total = 0;
+            cart.forEach(item => {
+                const cartItem = document.createElement('div');
+                cartItem.innerHTML = `
+                    <p>${item.title} (${item.quantity} x $${item.price})</p>
+                    <button onclick="removeFromCart(${cart.indexOf(item)})">Remove</button>
+                `;
+                cartItems.appendChild(cartItem);
+                total += item.price * item.quantity;
+            });
+            document.getElementById('cart-total').innerText = total.toFixed(2);
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        displayBooks(books);
+
+        document.getElementById('search-button').addEventListener('click', () => {
+            const query = document.getElementById('search-input').value;
+            searchBooks(query);
+       });
+
+        document.getElementById('checkout-button').addEventListener('click', () => {
+            alert(`Thank you for your purchase! Your total is $${document.getElementById('cart-total').innerText}.`);
+            cart.length = 0;
+            updateCart();
+        });
+    </script>
+</body>
+</html>
